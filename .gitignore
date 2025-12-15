@@ -1,0 +1,6 @@
+# Never upload the .env file - it contains secrets
+.env
+
+# Python cache files
+__pycache__/
+*.pyc
