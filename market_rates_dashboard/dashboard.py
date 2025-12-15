@@ -374,11 +374,13 @@ def create_us_heatmap(market_df, carerev_df=None, specialty_filter='All', pay_ty
         carerev_rate = None
         job_count = 0
         
+        # Extract city short name (used for both market and CareRev matching)
+        city_short = city_name.split(',')[0].strip()
+        
         if market_df is not None and len(market_df) > 0:
             city_market = market_df.copy()
             
             # Filter by city name (partial match)
-            city_short = city_name.split(',')[0].strip()
             if 'city' in city_market.columns:
                 city_market = city_market[city_market['city'].str.contains(city_short, case=False, na=False)]
             elif 'location' in city_market.columns:
