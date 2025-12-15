@@ -1,230 +1,158 @@
-# Healthcare Job Scraper
+# CareRev Market Rates Dashboard
 
-An AI-powered web scraper that collects healthcare job listings from multiple job boards, normalizes pay rates, and generates daily reports.
-
----
-
-## ⚠️ IMPORTANT: Ethical & Legal Considerations
-
-**Before using this tool, you MUST read [ETHICAL_GUIDELINES.md](ETHICAL_GUIDELINES.md)**
-
-This scraper is designed with ethical web scraping practices:
-
-| Principle | How It's Implemented |
-|-----------|---------------------|
-| **1. Respect robots.txt** | ✅ Automatically checks each site's robots.txt before scraping |
-| **2. Rate Limiting** | ✅ 3-7 second delays between requests; auto-slowdown if too fast |
-| **3. Terms of Service** | ⚠️ YOU must review each site's ToS before using |
-
-### Terms of Service Links (Review Before Use!)
-
-- [Indeed Terms](https://www.indeed.com/legal)
-- [Vivian Health Terms](https://www.vivian.com/terms)
-- [ZipRecruiter Terms](https://www.ziprecruiter.com/terms)
-- [Aya Healthcare Terms](https://www.ayahealthcare.com/terms-and-conditions)
-- [IntelyCare Terms](https://www.intelycare.com/terms-of-service)
-
----
+A Streamlit dashboard for comparing CareRev rates against market data from Indeed, Vivian Health, Aya Healthcare, and IntelyCare.
 
 ## Features
 
-- **Multi-source scraping**: Indeed, Vivian Health, ZipRecruiter, Aya Healthcare, IntelyCare
-- **Ethical by default**: robots.txt compliance, rate limiting, ToS awareness
-- **AI-powered parsing**: Uses Claude (Anthropic) to intelligently extract job details
-- **Pay rate normalization**: Converts hourly/weekly/annual rates to standardized hourly format
-- **50+ US cities**: Comprehensive geographic coverage
-- **Daily automation**: GitHub Actions runs the scraper daily at 6 AM EST
-- **Email reports**: Receive daily summaries with Excel attachments
-- **Database storage**: SQLite for tracking jobs over time
+- 📤 **CSV Upload**: Upload your CareRev rates to compare against market data
+- 📊 **Interactive Charts**: Visualize rates by specialty, shift type, and health system
+- 🔍 **Filters**: Filter by health system, specialty, and job type
+- 📥 **Data Export**: Download filtered data as CSV
+- 🔗 **Shareable Link**: Deploy to Streamlit Cloud for team access
 
----
+## Quick Start (Local)
 
-## Quick Start
-
-### 1. Clone the repository
-```bash
-git clone https://github.com/yourusername/healthcare_job_scraper.git
-cd healthcare_job_scraper
-```
-
-### 2. Install dependencies
+### 1. Install dependencies
 ```bash
 pip3 install -r requirements.txt
-playwright install chromium
 ```
 
-### 3. Set up environment variables
+### 2. Run the dashboard
 ```bash
-cp .env.example .env
-# Edit .env with your API keys
+streamlit run dashboard.py
 ```
 
-### 4. Review Terms of Service
-```bash
-# View the Terms of Service notice
-python3 main.py --tos
-```
-
-### 5. Run the scraper
-```bash
-# Test run (3 cities, quick)
-python3 main.py --test
-
-# Full run (all cities)
-python3 main.py --full
-```
+### 3. Open in browser
+Navigate to `http://localhost:8501`
 
 ---
 
-## Ethical Scraping Features
+## Deploy to Streamlit Cloud (Free - Get a Shareable Link)
 
-### robots.txt Compliance
-```
-✓ Checked robots.txt for indeed.com
-✓ Checked robots.txt for vivian.com
-⛔ robots.txt DISALLOWS: https://example.com/restricted
-   Respecting site owner's wishes - skipping this URL
-```
+### Step 1: Add dashboard to your GitHub repo
 
-### Rate Limiting
-```
-⏱️ Rate limiting: waiting 4.2s...
-⏱️ Rate limiting: waiting 5.8s...
-ℹ️ Site requests 10s crawl delay - respecting
-```
-
-### Auto-Slowdown
-```
-⚠️ High request rate detected: 16.2/min
-   Adding extra delay to be respectful...
-```
-
----
-
-## Configuration
-
-### Environment Variables (.env)
-
-| Variable | Description | Required |
-|----------|-------------|----------|
-| ANTHROPIC_API_KEY | Your Anthropic API key for AI parsing | Yes |
-| SENDER_EMAIL | Gmail address for sending reports | No |
-| SENDER_PASSWORD | Gmail App Password | No |
-| RECIPIENT_EMAIL | Where to send reports | No |
-
-### Ethical Settings (in code)
-
-```python
-# Always recommended: keep robots.txt checking enabled
-scraper = IndeedScraper(respect_robots=True)
-
-# Rate limiting is built-in and cannot be disabled
-# Minimum 3-7 second delays between all requests
-```
-
----
-
-## Project Structure
-
+Copy these files to your `healthcare_job_scraper` repository:
 ```
 healthcare_job_scraper/
-├── .github/workflows/     # GitHub Actions automation
-│   └── daily-scrape.yml
-├── config/                # Configuration files
-│   ├── cities.py          # City list
-│   └── settings.py        # App settings
-├── scrapers/              # Job board scrapers
-│   ├── base_scraper.py    # Ethical scraping base class
-│   ├── indeed_scraper.py
-│   ├── vivian_scraper.py
-│   ├── ziprecruiter_scraper.py
-│   ├── aya_scraper.py
-│   └── intelycare_scraper.py
-├── parsers/               # Data processing
-│   ├── ai_parser.py       # Claude AI integration
-│   └── pay_normalizer.py  # Pay rate standardization
-├── database/              # Data storage
-│   ├── models.py          # SQLAlchemy models
-│   └── connection.py      # Database manager
-├── notifications/         # Email reports
-│   └── email_notifier.py
-├── main.py               # Main entry point
-├── scheduler.py          # Local scheduling
-├── requirements.txt      # Python dependencies
-├── ETHICAL_GUIDELINES.md # ⚠️ READ THIS FIRST
-└── README.md
+├── dashboard.py           # Main dashboard
+├── requirements.txt       # Update existing or create new
+└── .streamlit/
+    └── config.toml        # Theme configuration
 ```
 
----
-
-## Job Sources
-
-| Source | URL | Specialty | robots.txt |
-|--------|-----|-----------|------------|
-| Indeed | indeed.com | General healthcare jobs | [View](https://www.indeed.com/robots.txt) |
-| Vivian Health | vivian.com | Travel nursing | [View](https://www.vivian.com/robots.txt) |
-| ZipRecruiter | ziprecruiter.com | General healthcare | [View](https://www.ziprecruiter.com/robots.txt) |
-| Aya Healthcare | ayahealthcare.com | Travel nursing/allied | [View](https://www.ayahealthcare.com/robots.txt) |
-| IntelyCare | intelycare.com | Per diem nursing | [View](https://www.intelycare.com/robots.txt) |
-
----
-
-## Output
-
-The scraper generates:
-- **Excel files**: `output/healthcare_jobs_YYYY-MM-DD.xlsx`
-- **SQLite database**: `healthcare_jobs.db`
-- **Email reports**: Daily summaries with statistics
-
----
-
-## GitHub Actions
-
-The workflow runs automatically at 6 AM EST daily. To set up:
-
-1. Go to your repository Settings → Secrets → Actions
-2. Add these secrets:
-   - `ANTHROPIC_API_KEY`
-   - `SENDER_EMAIL` (optional)
-   - `SENDER_PASSWORD` (optional)
-   - `RECIPIENT_EMAIL` (optional)
-
----
-
-## Command Line Options
+### Step 2: Push to GitHub
 
 ```bash
-python3 main.py           # Default test run
-python3 main.py --test    # Test run (3 cities)
-python3 main.py --full    # Full run (all cities)
-python3 main.py --tos     # Show Terms of Service notice
-python3 main.py --help    # Show help
+git add .
+git commit -m "Add market rates dashboard"
+git push
 ```
 
----
+### Step 3: Deploy on Streamlit Cloud
 
-## Acceptable Use
+1. Go to [share.streamlit.io](https://share.streamlit.io)
+2. Click **"New app"**
+3. Connect your GitHub account (if not already)
+4. Select your repository: `healthcare_job_scraper`
+5. Set the main file: `dashboard.py`
+6. Click **"Deploy"**
 
-✅ **Allowed:**
-- Personal career research
-- Market rate analysis for salary negotiations
-- Academic research
-- Understanding job market trends
+### Step 4: Share with your team!
 
-❌ **Not Allowed:**
-- Commercial redistribution of data
-- Building competing job boards
-- Selling scraped data
-- Any use violating site Terms of Service
+You'll get a URL like: `https://carerev-market-rates.streamlit.app`
 
----
-
-## License
-
-MIT License - See [ETHICAL_GUIDELINES.md](ETHICAL_GUIDELINES.md) for usage restrictions.
+Share this link with anyone on your team - they can:
+- View market rate comparisons
+- Upload their own CareRev CSV files
+- Filter and analyze the data
+- Download filtered results
 
 ---
 
-## Disclaimer
+## CSV Format
 
-This tool is provided for educational and personal research purposes. **You are responsible** for ensuring your use complies with all applicable laws and Terms of Service. The authors are not responsible for misuse of this tool.
+Your CareRev rates CSV should have these columns:
+
+| Column | Description | Example |
+|--------|-------------|---------|
+| Health System | Parent organization | Advocate Aurora Health WI |
+| Hospital | Facility name | Aurora BayCare Medical Center |
+| Specialty | Job specialty | ICU RN, Med/Surg RN, ER RN |
+| Shift Type | Shift category | Day Shift, Night Shift, Weekend |
+| AVERAGE Pay Rate | Hourly rate | $68.36 |
+
+---
+
+## Dashboard Sections
+
+### 📈 Key Metrics
+- Your average rate vs market average
+- Difference ($ and %)
+- Total records analyzed
+
+### 💰 Rates by Specialty
+- Side-by-side comparison: CareRev vs Market
+- Specialties: ICU, Med/Surg, ER, Tele, OR, PACU, CNA
+
+### 🌙 Rates by Shift Type
+- Day, Night, Weekend, Night Weekend
+- See shift differentials
+
+### 🏥 Rates by Health System
+- Top 15 health systems by average rate
+- Identify high and low paying systems
+
+### 📋 Detailed Data Table
+- Full filterable data
+- Download as CSV
+
+---
+
+## Connecting to Market Data
+
+The dashboard automatically loads market data from your scraper's output files.
+
+Make sure your scraper exports to the `output/` folder:
+```
+output/healthcare_jobs_2024-12-15.xlsx
+```
+
+The dashboard will find and load the most recent file.
+
+---
+
+## Customization
+
+### Change Colors
+
+Edit `.streamlit/config.toml`:
+```toml
+[theme]
+primaryColor = "#003e52"      # Main accent color
+backgroundColor = "#ffffff"    # Page background
+secondaryBackgroundColor = "#eceeef"  # Sidebar, cards
+textColor = "#003e52"         # Text color
+```
+
+### Add More Charts
+
+Edit `dashboard.py` to add additional visualizations using Plotly.
+
+---
+
+## Troubleshooting
+
+### "No market data found"
+Run your scraper first: `python main.py --test`
+
+### Charts not showing
+Make sure your CSV has the correct column names (case-sensitive)
+
+### Deployment fails
+Check that `requirements.txt` is in your repo root
+
+---
+
+## Support
+
+For issues or feature requests, contact the CareRev Analytics team.
