@@ -1,6 +1,10 @@
 """
 ZipRecruiter Healthcare Job Scraper
 Scrapes nursing and healthcare jobs from ZipRecruiter.com
+
+Note: Always check ZipRecruiter's robots.txt and Terms of Service before use.
+https://www.ziprecruiter.com/robots.txt
+https://www.ziprecruiter.com/terms
 """
 
 from .base_scraper import BaseScraper
@@ -21,9 +25,10 @@ class ZipRecruiterScraper(BaseScraper):
         'ER Nurse'
     ]
     
-    def __init__(self, headless=True):
-        super().__init__(headless)
+    def __init__(self, headless=True, respect_robots=True):
+        super().__init__(headless, respect_robots)
         self.source_name = "ZipRecruiter"
+        self.base_url = "https://www.ziprecruiter.com"
     
     def build_url(self, job_type, city, state):
         """Build ZipRecruiter search URL."""
@@ -100,7 +105,6 @@ class ZipRecruiterScraper(BaseScraper):
                     all_jobs.append(job)
             
             print(f"    Found {len(job_cards)} listings")
-            self.random_delay(3, 6)
         
         self.jobs = all_jobs
         return all_jobs

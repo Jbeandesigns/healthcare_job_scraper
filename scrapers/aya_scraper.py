@@ -1,7 +1,10 @@
 """
 Aya Healthcare Job Scraper
 Scrapes travel nursing and allied health jobs from AyaHealthcare.com
-Aya is one of the largest travel nursing agencies
+
+Note: Always check Aya Healthcare's robots.txt and Terms of Service before use.
+https://www.ayahealthcare.com/robots.txt
+https://www.ayahealthcare.com/terms-and-conditions
 """
 
 from .base_scraper import BaseScraper
@@ -13,13 +16,13 @@ class AyaHealthcareScraper(BaseScraper):
     
     BASE_URL = "https://www.ayahealthcare.com/healthcare-jobs"
     
-    def __init__(self, headless=True):
-        super().__init__(headless)
+    def __init__(self, headless=True, respect_robots=True):
+        super().__init__(headless, respect_robots)
         self.source_name = "Aya Healthcare"
+        self.base_url = "https://www.ayahealthcare.com"
     
     def build_url(self, city, state, specialty=None):
         """Build Aya Healthcare search URL."""
-        # Aya uses location-based URL structure
         location = quote(f"{city}, {state}")
         base = f"{self.BASE_URL}?location={location}"
         if specialty:
@@ -103,7 +106,6 @@ class AyaHealthcareScraper(BaseScraper):
                     all_jobs.append(job)
             
             print(f"    Found {len(job_cards)} listings")
-            self.random_delay(3, 5)
         
         self.jobs = all_jobs
         return all_jobs

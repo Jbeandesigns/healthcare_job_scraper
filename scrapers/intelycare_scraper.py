@@ -1,7 +1,10 @@
 """
 IntelyCare Job Scraper
 Scrapes nursing jobs from IntelyCare.com
-IntelyCare specializes in per-diem and PRN nursing shifts
+
+Note: Always check IntelyCare's robots.txt and Terms of Service before use.
+https://www.intelycare.com/robots.txt
+https://www.intelycare.com/terms-of-service
 """
 
 from .base_scraper import BaseScraper
@@ -13,13 +16,13 @@ class IntelyCareScraper(BaseScraper):
     
     BASE_URL = "https://www.intelycare.com/nursing-jobs"
     
-    def __init__(self, headless=True):
-        super().__init__(headless)
+    def __init__(self, headless=True, respect_robots=True):
+        super().__init__(headless, respect_robots)
         self.source_name = "IntelyCare"
+        self.base_url = "https://www.intelycare.com"
     
     def build_url(self, city, state):
         """Build IntelyCare search URL."""
-        # IntelyCare URL structure - they focus on specific markets
         location = f"{city.lower().replace(' ', '-')}-{state.lower()}"
         return f"{self.BASE_URL}/{location}"
     

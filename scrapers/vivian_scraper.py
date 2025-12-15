@@ -1,7 +1,10 @@
 """
 Vivian Health Job Scraper
 Scrapes travel nursing and healthcare jobs from Vivian.com
-Vivian is excellent for travel nursing pay data
+
+Note: Always check Vivian's robots.txt and Terms of Service before use.
+https://www.vivian.com/robots.txt
+https://www.vivian.com/terms
 """
 
 from .base_scraper import BaseScraper
@@ -13,9 +16,10 @@ class VivianScraper(BaseScraper):
     
     BASE_URL = "https://www.vivian.com/search"
     
-    def __init__(self, headless=True):
-        super().__init__(headless)
+    def __init__(self, headless=True, respect_robots=True):
+        super().__init__(headless, respect_robots)
         self.source_name = "Vivian Health"
+        self.base_url = "https://www.vivian.com"
     
     def build_url(self, city, state, job_type="nurse"):
         """Build Vivian search URL."""
@@ -95,7 +99,6 @@ class VivianScraper(BaseScraper):
                     all_jobs.append(job)
             
             print(f"    Found {len(job_cards)} listings")
-            self.random_delay(3, 5)
         
         self.jobs = all_jobs
         return all_jobs
