@@ -184,7 +184,10 @@ def load_all_market_data():
     excel_files = (
         glob.glob('output/healthcare_jobs_*.xlsx') +
         glob.glob('../output/healthcare_jobs_*.xlsx') +
-        glob.glob('healthcare_job_scraper/output/healthcare_jobs_*.xlsx')
+        glob.glob('data/healthcare_jobs_*.xlsx') +
+        glob.glob('../data/healthcare_jobs_*.xlsx') +
+        glob.glob('healthcare_job_scraper/output/healthcare_jobs_*.xlsx') +
+        glob.glob('healthcare_job_scraper/data/healthcare_jobs_*.xlsx')
     )
     
     if not excel_files:
@@ -215,7 +218,10 @@ def load_market_data():
     excel_files = (
         glob.glob('output/healthcare_jobs_*.xlsx') +
         glob.glob('../output/healthcare_jobs_*.xlsx') +
-        glob.glob('healthcare_job_scraper/output/healthcare_jobs_*.xlsx')
+        glob.glob('data/healthcare_jobs_*.xlsx') +
+        glob.glob('../data/healthcare_jobs_*.xlsx') +
+        glob.glob('healthcare_job_scraper/output/healthcare_jobs_*.xlsx') +
+        glob.glob('healthcare_job_scraper/data/healthcare_jobs_*.xlsx')
     )
     
     if not excel_files:
