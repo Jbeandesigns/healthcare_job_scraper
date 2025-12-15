@@ -180,10 +180,15 @@ PAY_TYPES = ["All", "Staff", "Travel", "Per Diem", "Crisis"]
 @st.cache_data(ttl=3600)
 def load_all_market_data():
     """Load all historical market data from scraped Excel files."""
-    excel_files = glob.glob('output/healthcare_jobs_*.xlsx')
+    # Check multiple possible locations (handles both root and subfolder deployment)
+    excel_files = (
+        glob.glob('output/healthcare_jobs_*.xlsx') +
+        glob.glob('../output/healthcare_jobs_*.xlsx') +
+        glob.glob('healthcare_job_scraper/output/healthcare_jobs_*.xlsx')
+    )
     
     if not excel_files:
-        excel_files = glob.glob('*.xlsx')
+        excel_files = glob.glob('*.xlsx') + glob.glob('../*.xlsx')
     
     all_data = []
     for file in excel_files:
@@ -206,10 +211,15 @@ def load_all_market_data():
 @st.cache_data
 def load_market_data():
     """Load the most recent market data from scraped Excel files."""
-    excel_files = glob.glob('output/healthcare_jobs_*.xlsx')
+    # Check multiple possible locations (handles both root and subfolder deployment)
+    excel_files = (
+        glob.glob('output/healthcare_jobs_*.xlsx') +
+        glob.glob('../output/healthcare_jobs_*.xlsx') +
+        glob.glob('healthcare_job_scraper/output/healthcare_jobs_*.xlsx')
+    )
     
     if not excel_files:
-        excel_files = glob.glob('*.xlsx')
+        excel_files = glob.glob('*.xlsx') + glob.glob('../*.xlsx')
     
     if not excel_files:
         return None, None
