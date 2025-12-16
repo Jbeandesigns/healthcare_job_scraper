@@ -1,57 +1,85 @@
 #!/usr/bin/env python3
 """
-TheirStack API Quick Test
-Run this first to verify your API key works and see sample data.
+Quick API Test for TheirStack
+Run this first to verify your API key works.
+
+SETUP:
+    Create a .env file in this folder with:
+    THEIRSTACK_API_KEY=your_api_key_here
 
 Usage:
     python3 test_theirstack.py
 """
 
 import requests
-import json
-from datetime import datetime, timedelta
+from datetime import datetime
+import os
 
-# Your TheirStack API Key
-API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqZXNzaWNhLmJlYW5AY2FyZXJldi5jb20iLCJwZXJtaXNzaW9ucyI6InVzZXIiLCJjcmVhdGVkX2F0IjoiMjAyNS0xMi0xNlQwMjo1NDozMy41NjA4NzYrMDA6MDAifQ.xjf9TYQce6JWbSIXedBVnm-LHs6uzrouZYCHJWM9jcc"
 
-def test_api():
-    """Test the TheirStack API with a simple nursing job search."""
+def load_api_key():
+    """Load API key from .env file."""
     
+    api_key = os.environ.get("THEIRSTACK_API_KEY")
+    
+    if not api_key:
+        env_file = os.path.join(os.path.dirname(__file__), ".env")
+        if os.path.exists(env_file):
+            with open(env_file, "r") as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith("THEIRSTACK_API_KEY="):
+                        api_key = line.split("=", 1)[1].strip().strip('"').strip("'")
+                        break
+    
+    if not api_key:
+        print("=" * 60)
+        print("❌ ERROR: No API key found!")
+        print("=" * 60)
+        print()
+        print("Create a .env file in this folder with:")
+        print()
+        print('    THEIRSTACK_API_KEY=your_api_key_here')
+        print()
+        exit(1)
+    
+    return api_key
+
+
+def test():
     print("=" * 60)
     print("TheirStack API Test")
     print("=" * 60)
-    print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"Time: {datetime.now()}")
+    print()
+    
+    api_key = load_api_key()
+    print("✓ API key loaded from .env file")
     print()
     
     url = "https://api.theirstack.com/v1/jobs/search"
     
     headers = {
-        "Authorization": f"Bearer {API_KEY}",
+        "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
         "Accept": "application/json"
     }
     
-    # Search for RN jobs posted in last 14 days
-    fourteen_days_ago = (datetime.now() - timedelta(days=14)).strftime("%Y-%m-%d")
-    
     payload = {
-        "job_title_pattern_or": ["Registered Nurse", "RN", "ICU Nurse", "Travel Nurse"],
+        "job_title_or": ["Registered Nurse", "RN", "ICU Nurse"],
         "job_country_code_or": ["US"],
-        "min_date_posted": fourteen_days_ago,
-        "limit": 50,
-        "page": 0,
-        "order_by": [{"desc": True, "field": "date_posted"}]
+        "posted_at_max_age_days": 14,
+        "limit": 25,
+        "offset": 0
     }
     
-    print(f"Searching for: RN / ICU Nurse / Travel Nurse jobs")
-    print(f"Posted after: {fourteen_days_ago}")
-    print(f"Country: US")
+    print("Searching for: Registered Nurse / RN / ICU Nurse")
+    print("Location: US")
     print()
     
     try:
-        response = requests.post(url, headers=headers, json=payload, timeout=30)
+        response = requests.post(url, headers=headers, json=payload, timeout=60)
         
-        print(f"API Status: {response.status_code}")
+        print(f"Status Code: {response.status_code}")
         print()
         
         if response.status_code == 200:
@@ -60,80 +88,45 @@ def test_api():
             jobs = data.get("data", [])
             
             print(f"✅ SUCCESS!")
-            print(f"Total jobs matching query: {total:,}")
-            print(f"Jobs returned in this request: {len(jobs)}")
-            print(f"API credits used: 1")
+            print(f"Total matching jobs: {total:,}")
+            print(f"Jobs returned: {len(jobs)}")
             print()
             
             if jobs:
-                print("=" * 100)
-                print("SAMPLE JOBS (First 15)")
-                print("=" * 100)
-                print(f"{'Title':<40} | {'Company':<25} | {'Location':<20} | {'Salary':<25}")
-                print("-" * 100)
+                print("-" * 80)
+                print(f"{'Title':<40} | {'Location':<20} | {'Salary':<20}")
+                print("-" * 80)
                 
-                for job in jobs[:15]:
+                for job in jobs[:10]:
                     title = job.get("job_title", "N/A")[:38]
-                    company = job.get("company_name", "N/A")[:23]
                     city = job.get("city", "")
                     state = job.get("state", "")
                     location = f"{city}, {state}"[:18] if city else "N/A"
-                    salary = job.get("salary_string", "")[:23] if job.get("salary_string") else "Not listed"
+                    salary = job.get("salary_string", "Not listed")[:18] if job.get("salary_string") else "Not listed"
                     
-                    print(f"{title:<40} | {company:<25} | {location:<20} | {salary:<25}")
+                    print(f"{title:<40} | {location:<20} | {salary:<20}")
                 
                 print()
-                print("=" * 100)
-                print("DETAILED VIEW - First Job")
-                print("=" * 100)
+                print("✅ API is working! Run: python3 run_healthcare_scraper.py")
                 
-                first_job = jobs[0]
-                print(f"Title:       {first_job.get('job_title', 'N/A')}")
-                print(f"Company:     {first_job.get('company_name', 'N/A')}")
-                print(f"Location:    {first_job.get('city', '')}, {first_job.get('state', '')} {first_job.get('country', '')}")
-                print(f"Salary:      {first_job.get('salary_string', 'Not listed')}")
-                print(f"Date Posted: {first_job.get('date_posted', 'N/A')}")
-                print(f"Source:      {first_job.get('source', 'N/A')}")
-                print(f"URL:         {first_job.get('final_url', 'N/A')[:80]}")
-                
-                # Show salary breakdown if available
-                min_sal = first_job.get("min_annual_salary")
-                max_sal = first_job.get("max_annual_salary")
-                if min_sal or max_sal:
-                    print(f"\nSalary Details:")
-                    if min_sal:
-                        hourly = min_sal / 2080
-                        print(f"  Min Annual: ${min_sal:,} (${hourly:.2f}/hr)")
-                    if max_sal:
-                        hourly = max_sal / 2080
-                        print(f"  Max Annual: ${max_sal:,} (${hourly:.2f}/hr)")
-            
-            print()
-            print("✅ API is working! You can now run the full scraper.")
-            return True
-            
         elif response.status_code == 401:
-            print("❌ Authentication failed - check your API key")
-            print(response.text)
-            return False
+            print("❌ INVALID API KEY")
+            print("Check your .env file")
+            
+        elif response.status_code == 422:
+            print("❌ INVALID REQUEST")
+            print(response.text[:200])
             
         elif response.status_code == 429:
-            print("❌ Rate limit exceeded - wait a bit and try again")
-            return False
+            print("❌ RATE LIMIT - wait a few minutes")
             
         else:
-            print(f"❌ Error: {response.status_code}")
-            print(response.text[:500])
-            return False
+            print(f"❌ ERROR: {response.status_code}")
+            print(response.text[:200])
             
-    except requests.exceptions.Timeout:
-        print("❌ Request timed out - try again")
-        return False
-        
-    except requests.exceptions.RequestException as e:
-        print(f"❌ Request failed: {e}")
-        return False
+    except Exception as e:
+        print(f"❌ ERROR: {e}")
 
 
 if __name__ == "__main__":
-    test_api()
+    test()
